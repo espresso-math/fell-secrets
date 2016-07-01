@@ -4,45 +4,69 @@
 /						      Everything gets piped in and piped out here.
 /
 ========================================================================================================================*/
-var fell_secrets = require('./libs/fell-secrets');
+var app = require('./libs/index');
+var fs = require('fs');
 
 module.exports = {
-	// The get routes
-	get_coordinate: function(data, hroute) { // Queries the database for coordinates.
-		hroute("coordinates", this.x200()); // hroute means hook route
-	},
-	get_gravatar: function() {
 
-	},
-	get_index: function(data, hroute) {
-		fell_secrets.get_index(data, function(val, err) {
-			hroute(val, err);
+
+	// The api routes
+	route1: function(val1, callback) {
+		app.route1(val1, function(val2, code) {
+			callback(val2, code);
 		});
 	},
-	// The post routes
-	post_coordinate: function() { // Posts a new query to database.
+	route2: function(val1, callback) {
+		app.route1(val1, function(val2, code) {
+			callback(val2, code);
+		});
+	},
 
+
+
+	// Template context routes
+	index1: function(val1, callback) {
+		app.index1(val1, function(val2, code) {
+			callback(val2, code);
+		});
 	},
+
+
+
 	// The hroutes
-	x200: function() { // 200 success
+	xCODE: function(val) {
 		var date = new Date();
-		console.log("#=> 200 finished " + date.toISOString());
-		return 200;
+		switch (val) {
+			case 200:
+				console.log("#=> 200 finished " + date.toISOString());
+				return 200;
+				break;
+			case 404:
+				console.log("#=> 404 error " + date.toISOString());
+				return 404;
+				break;
+			case 502:
+				console.log("#=> 502 error " + date.toISOString());
+				return 502;
+				break;
+			case 500:
+				console.log("#=> 500 error " + date.toISOString());
+				return 500;
+				break;
+			default:
+				console.log("#=> Plz impliment!!");
+				return 404;
+				break;
+		}
 	},
-	x404: function() { // 404 error
-		var date = new Date();
-		console.log("#=> 404 error " + date.toISOString());
-		return 404;
-	},
-	x502: function() { // 502 error
-		var date = new Date();
-		console.log("#=> 502 error " + date.toISOString());
-		return 502;
-	},
-	x500: function() { // 500 error
-		var date = new Date();
-		console.log("#=> 500 error " + date.toISOString());
-		return 500;
+	x404: function(callback) { // Serve a default 404 page.
+		fs.readFile('./static/404.html', function(error, content) {
+			if(!error) {
+				callback(content);
+			} else {
+				callback("404 not found");
+			}
+	    });
 	}
 };
 
